@@ -1,0 +1,120 @@
+    struct fb_fix_screeninfo {  
+        char id[16];            /*识别字符串如“TT内装式”*/  
+        unsigned long smem_start;   /* Start of frame buffer mem */  
+                        /* (physical address) */  
+        __u32 smem_len;         /* 帧缓冲mem的开始 */  
+        __u32 type;         /* see FB_TYPE_*        */  
+        __u32 type_aux;           
+        __u32 visual;           /* see FB_VISUAL_*      */   
+        __u16 xpanstep;         /* zero if no hardware panning  */  
+        __u16 ypanstep;         /* zero if no hardware panning  */  
+        __u16 ywrapstep;        /* zero if no hardware ywrap    */  
+        __u32 line_length;      /* length of a line in bytes    */  
+        unsigned long mmio_start;   /* Start of Memory Mapped I/O   */  
+                        /* (physical address) */  
+        __u32 mmio_len;         /* Length of Memory Mapped I/O  */  
+        __u32 accel;            /* Indicate to driver which */  
+                        /*  specific chip/card we have  */  
+        __u16 reserved[3];      /* Reserved for future compatibility */  
+    };  
+
+
+struct fb_var_screeninfo {  
+        __u32 xres;         /* visible resolution       */  
+        __u32 yres;  
+        __u32 xres_virtual;     /* virtual resolution       */  
+        __u32 yres_virtual;  
+        __u32 xoffset;          /* offset from virtual to visible */  
+        __u32 yoffset;          /* resolution           */  
+      
+        __u32 bits_per_pixel;       /* guess what           */  
+        __u32 grayscale;        /* != 0 Graylevels instead of colors */  
+      
+        struct fb_bitfield red;     /* bitfield in fb mem if true color, */  
+        struct fb_bitfield green;   /* else only length is significant */  
+        struct fb_bitfield blue;  
+        struct fb_bitfield transp;  /* transparency         */    
+      
+        __u32 nonstd;           /* != 0 Non standard pixel format */  
+      
+        __u32 activate;         /* see FB_ACTIVATE_*        */  
+      
+        __u32 height;           /* height of picture in mm    */  
+        __u32 width;            /* width of picture in mm     */  
+      
+        __u32 accel_flags;      /* (OBSOLETE) see fb_info.flags */  
+      
+        /* Timing: All values in pixclocks, except pixclock (of course) */  
+        __u32 pixclock;         /* pixel clock in ps (pico seconds) */  
+        __u32 left_margin;      /* time from sync to picture    */  
+        __u32 right_margin;     /* time from picture to sync    */  
+        __u32 upper_margin;     /* time from sync to picture    */  
+        __u32 lower_margin;  
+        __u32 hsync_len;        /* length of horizontal sync    */  
+        __u32 vsync_len;        /* length of vertical sync  */  
+        __u32 sync;         /* see FB_SYNC_*        */  
+        __u32 vmode;            /* see FB_VMODE_*       */  
+        __u32 rotate;           /* angle we rotate counter clockwise */  
+        __u32 reserved[5];      /* Reserved for future compatibility */  
+    };  
+
+
+    ioctl(fdfd,FBIOGET_FSCREENINFO,&finfo); //获取 固定参数
+
+        printf("id %s\n",finfo.id);       s3c2410fb
+        printf("smem_start %d\n",finfo.smem_start); //帧缓冲 内存开始地址,物理地址
+        printf("smem_len %d\n",finfo.smem_len); // 帧缓冲 内存 长度
+        printf("type %d\n",finfo.type);
+        printf("type_aux %d\n",finfo.type_aux);//平面交织交替
+        printf("visual %d\n",finfo.visual); //记录 色彩模式   2
+        printf("xpanstep %d\n",finfo.xpanstep);//如果没有硬件panning，赋0
+        printf("ypanstep %d\n",finfo.ypanstep);
+        printf("line_length %d\n",finfo.line_length);    640
+        printf("mmio_start %d\n",finfo.mmio_start);//内存映射IO开始地址 物理地址
+        printf("mmio_len %d\n",finfo.mmio_len);//内存映射IO 长度
+        printf("accel %d\n\n",finfo.accel);
+        
+
+        ioctl(fdfd,FBIOGET_VSCREENINFO,&vinfo); //获取可变参数
+
+        printf("xres %d\n",vinfo.xres); //可见解析度  320
+        printf("yres %d\n",vinfo.yres);            240
+        printf("xres_virturl %d\n",vinfo.xres_virtual); //虚拟解析度  320
+        printf("yres_virtual %d\n",vinfo.yres_virtual);              240
+        printf("xoffset %d\n",vinfo.xoffset); //虚拟到可见的偏移        0
+        printf("yoffset %d\n",vinfo.yoffset);                         0
+        printf("bits_per_pixel %d\n",vinfo.bits_per_pixel); //每像素位数 bpp  16
+        printf("grayscale %d\n",vinfo.grayscale);//非零时，指灰度
+        
+        printf("fb_bitfield red.offset %d\n",vinfo.red.offset);     11  偏移11位
+        printf("fb_bitfield .length %d\n",vinfo.red.length);         5
+        printf("fb_bitfield .msb_right %d\n",vinfo.red.msb_right);    0
+        printf("fb_bitfield green.offset %d\n",vinfo.green.offset);  5 偏移5位
+        printf("fb_bitfield .length %d\n",vinfo.green.length);        6
+        printf("fb_bitfield .msb_right %d\n",vinfo.green.msb_right);  0
+        printf("fb_bitfield blue.offset %d\n",vinfo.blue.offset);
+        printf("fb_bitfield .length %d\n",vinfo.blue.length);
+        printf("fb_bitfield .msb_right %d\n",vinfo.blue.msb_right);
+        printf("fb_bitfield transp.offset %d\n",vinfo.transp.offset);
+        printf("fb_bitfield .length %d\n",vinfo.transp.length);
+        printf("fb_bitfield .msb_right %d\n",vinfo.transp.msb_right);
+
+        printf("nonstd %d\n",vinfo.nonstd); //!=0 非标准像素格式
+            printf("activate %d\n",vinfo.activate);
+        printf("height %d\n",vinfo.height); //高度/  240
+        printf("widht %d\n",vinfo.width);             320
+        printf("accel_flags %d\n",vinfo.accel_flags); //看 fb_info.flags
+
+        //定时，除了 pixclock之外，其他的都以像素时钟为单位
+        printf("pixclock %d\n",vinfo.pixclock);//像素时钟，皮秒   80000
+        printf("left_margin %d\n",vinfo.left_margin);//行切换：从同步到绘图之间的延迟    28
+        printf("right_margin %d\n",vinfo.right_margin);//行切换：从绘图到同步之间的延迟   24
+        printf("upper_margin %d\n",vinfo.upper_margin);//帧切换：从同步到绘图之间的延迟   6
+        printf("lower_margin %d\n",vinfo.lower_margin);//帧切换：从绘图到同步之间的延迟    2
+
+        printf("hsync_len %d\n",vinfo.hsync_len); //hor 水平同步的长度         42
+        printf("vsync_len %d\n",vinfo.vsync_len); //vir 垂直同步的长度         12
+
+        printf("sync %d\n",vinfo.sync); //
+        printf("vmode %d\n",vinfo.vmode);
+        printf("rotate %d\n",vinfo.rotate);
