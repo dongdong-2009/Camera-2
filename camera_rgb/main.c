@@ -1,45 +1,47 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <malloc.h>
+#include <time.h>
+#include "framebuffer.h"
 #include "camera_rgb.h"
 
-int  main()
+#define MY_WIDTH		640	
+#define MY_HEIGHT		480
+#define NUM_FRAM                50
+
+int main()
 {
- //打开摄像头设备
- open_cameral(VIDEO_PATH);
-// get_camInfo();
- set_Camera_format(720,576);
- get_CameraBuf();
- map_buf();
- startcon();
-#if 0
- //初始化帧缓冲
- init_FrameBuffer();  
- //获取当前摄像头的格式信息    
- get_camInfo();
- //设置用户需要的摄像头格式信息(分辨率和图形格式)
- set_format();
- //获取摄像头采集图片buf
- get_buf();
- //映射buf到用户空间
- map_buf();
- //开始采集
- startcon();
- while(1) //这里可以优化成select，就不会阻塞了
- {
-     //获取采集到的数据
-     get_picture(bmp);
-     //把采集数据写入帧缓冲
-     write_data_to_fb(FrameBuffer, Frame_fd, bmp, cam_width, cam_hight, Framebpp);    
- }
- 
- //停止采集
- stopcon();  
- //解除映射
- bufunmap();
- //关闭帧缓冲
- exit_Framebuffer();  
-#endif
- //关闭摄像头设备
-// stopcon();
- //bufunmap();
- close_cameral();      
+	char buffer[MY_WIDTH*MY_HEIGHT*2];
+	clock_t starttime, endtime;
+	double totaltime;
+
+	//打开摄像头设备
+	open_cameral(VIDEO_PATH);
+	init_FrameBuffer();//初始化帧缓存
+	//get_camInfo();
+	set_Camera_format(MY_WIDTH,MY_HEIGHT);
+
+	map_buf();
+
+	printf("-------%s,line = %d\n",__FUNCTION__,__LINE__);
+	startcon();
+	starttime = clock();
+	int i;
+	while(1){	
+		get_picture(buffer);
+		
+		write_data_to_fb(FrameBuffer, Frame_fd, buffer,MY_WIDTH,MY_HEIGHT,Framebpp);	
+	}
+	//	endtime = clock();
+	//	totaltime = (double)( (endtime - starttime)/(double)CLOCKS_PER_SEC );
+	//	printf("time :%f, rate :%f\n",totaltime,NUM_FRAM/totaltime);
+	//停止采集
+	stopcon();  
+	//解除映射
+	bufunmap();
+	//关闭帧缓冲
+	exit_Framebuffer();  
+	close_cameral();      
+	return 0;
 }
