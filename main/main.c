@@ -6,8 +6,8 @@
 #include "framebuffer.h"
 #include "camera_rgb.h"
 
-#define MY_WIDTH		640	
-#define MY_HEIGHT		480
+#define MY_WIDTH		720	
+#define MY_HEIGHT		576
 #define NUM_FRAM                50
 
 int main()

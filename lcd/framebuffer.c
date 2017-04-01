@@ -72,9 +72,9 @@ int write_data_to_fb(void *fbp, int fbfd, void *img_buf, unsigned int img_width,
 switch (img_bits)
     {
         case 32:
-            for(row = 0; row < img_height; row++)
+            for(row = 0; row < img_height*3/2; row++)
                 {
-                    for(column = 0; column < img_width; column++)
+                    for(column = 0; column < img_width*3/2; column++)
                     {
                         //由于摄像头分辨率没有帧缓冲大，完成显示后，需要强制换行，帧缓冲是线性的，使用row * vinfo.xres_virtual换行
                 //      rgb32_fbp[row * Framex + column].r = rgb32_img_buf[num].r;
@@ -83,12 +83,10 @@ switch (img_bits)
 	
 			//printf("---------r:%d,g:%d,b:%d------\n",rgb32_img_buf[num].r,rgb32_img_buf[num].g,rgb32_img_buf[num].b);
 			//sleep(1);
-			FrameBuffer[row * 4000 + column] = buf[num];
+			FrameBuffer[row *1600*2 + column*2] = buf[num];
 			num++;
-
                     }
                 }    
-	    num = 0;
 	    break;
         default:
             break;

@@ -1,0 +1,1 @@
+cmd_/home/topeet/testcode/minicode/key/key.ko := /usr/local/arm/arm-2009q3/bin/arm-none-linux-gnueabi-ld -EL -r  -T /home/topeet/zImage/iTop4412_Kernel_3.0/scripts/module-common.lds --build-id  -o /home/topeet/testcode/minicode/key/key.ko /home/topeet/testcode/minicode/key/key.o /home/topeet/testcode/minicode/key/key.mod.o
