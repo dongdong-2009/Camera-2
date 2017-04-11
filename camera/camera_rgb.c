@@ -85,7 +85,7 @@ int set_Camera_format(int cam_width,int cam_hight){
 	printf("-----------------------%d\n",cam_width);
 	fmt.fmt.pix.width       = cam_width;   //用户希望设置的宽
 	fmt.fmt.pix.height      = cam_hight;   //用户希望设置的高
-	fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_RGB565;//选择格式：V4L2_PIX_FMT_YUYV或V4L2_PIX_FMT_MJPEG
+	fmt.fmt.pix.pixelformat =V4L2_PIX_FMT_RGB565; //V4L2_PIX_FMT_RGB565;//选择格式：V4L2_PIX_FMT_YUYV或V4L2_PIX_FMT_MJPEG
 	fmt.fmt.pix.field       = V4L2_FIELD_INTERLACED;
 	int ret = 0;
 	ret  = xioctl(fd,VIDIOC_S_FMT,&fmt);
@@ -247,7 +247,6 @@ int get_picture(char *buffer)
 		}
 	}
 	assert(buf.index < numBufs);
-	printf("************** %s, line = %d\n", __FUNCTION__, __LINE__);
     //把图片数据放到buffer中
 	memcpy(buffer,buffers[0].start,cap_image_size);  
 

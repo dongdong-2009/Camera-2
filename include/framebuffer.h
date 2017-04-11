@@ -1,8 +1,12 @@
 #ifndef __FRAMEBUFFER_H__
 #define __FRAMEBUFFER_H__
 
-#define uint_8 unsigned int
+#define uint_8 char
 #include <stdio.h>
+
+#define RGB565_RED      0xf800  
+#define RGB565_GREEN    0x07e0  
+#define RGB565_BLUE     0x001f 
 
 int Frame_fd;
 long int screensize; 
@@ -10,13 +14,18 @@ char *FrameBuffer;
 unsigned int Framebpp;
 
 int init_FrameBuffer(void);//初始化帧缓存
+
+typedef struct {
+        uint_8 x; 
+        uint_8 y; 
+} rgb16;
+
 //rgb结构
 typedef struct {
 	uint_8 r; // 红色分量
 	uint_8 g; // 绿色分量
 	uint_8 b; // 蓝色分量
-	uint_8 rgbReserved; // 保留字节（用作Alpha通道或忽略）
-} rgb32;
+} rgb24;
 
 //帧缓冲中的rgb结构
 typedef struct {
@@ -37,6 +46,8 @@ typedef struct {
 *height：用>户的高  
 *bits：帧缓冲的位深
 *******************************************************/
+void rgb16torgb24(void*buffer,void*image);
+
 int write_data_to_fb(void *fbp, int fbfd, void *img_buf, unsigned int img_width, \
 			unsigned int img_height, unsigned int img_bits);
 

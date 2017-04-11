@@ -1,6 +1,6 @@
 GCC = arm-linux-gcc 
 SUBDIRS = main camera lcd obj
-#key rocker serial
+#key rocker uart
 
 BIN = debug
 OBJS = camera_rgb.o framebuffer.o main.o

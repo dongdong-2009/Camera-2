@@ -1,4 +1,5 @@
 #include <unistd.h>
+#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "framebuffer.h"
@@ -51,47 +52,72 @@ int init_FrameBuffer(void)
     return 0 ;   
 }  
 
+void rgb16torgb24(void*buffer,void*image){
+	rgb16 *rgb_565 = (rgb16 *)buffer;
+	rgb24 *rgb_888 = (rgb24 *)image;
+	int row, column;
+	int num = 0;
+	for(row = 0; row < 272; row++)
+	{
+		for(column = 0; column < 480; column++)
+		{
+			rgb_888[num].r  = ((rgb_565[num].x + (rgb_565[num].y << 8) & RGB565_RED))    >> 8;  
+			rgb_888[num].g  = ((rgb_565[num].x + (rgb_565[num].y << 8) & RGB565_GREEN))  >> 3;  
+			rgb_888[num].b  = ((rgb_565[num].x + (rgb_565[num].y << 8) & RGB565_BLUE))   << 3;  
+			
+			/*
+			//sleep(1);
+			//printf("x:%d y:%d,num:%d",rgb_565[num].x,rgb_565[num].y,(rgb_565[num].x + (rgb_565[num].y << 8)));	
+	//		fflush(NULL);	
+			rgb_888[num].b =((rgb_565[num].x + (rgb_565[num].y << 8))&0xF800) << 3;
+			rgb_888[num].g =((rgb_565[num].x + (rgb_565[num].y << 8))&0x7E0) << 2;
+			rgb_888[num].r =((rgb_565[num].x + (rgb_565[num].y << 8))&0x1F)<< 3;
+		 	*/num++;
+		}
+	}
+}
+
 //写入framebuffer   fbp：帧缓冲首地址   fbfd：帧缓冲fd   img_buf:采集到的图片首地址  width：用户的宽 height：用户的高  bits：帧缓冲的位深 
 int write_data_to_fb(void *fbp, int fbfd, void *img_buf, unsigned int img_width, unsigned int img_height, unsigned int img_bits)
 {   
-    int row, column;
-    int num = 0;        //img_buf 中的某个像素点元素的下标
-   // rgb32_frame *rgb32_fbp = (rgb32_frame *)fbp;
-   // rgb32 *rgb32_img_buf = (rgb32 *)img_buf;    
-  //  int *fd = (int *)fbp;    
-     char *buf = (char *)img_buf;
+	int row, column;
+	int num = 0;        //img_buf 中的某个像素点元素的下标
+	rgb32_frame *rgb32_fbp = (rgb32_frame *)fbp;
+	rgb24 *rgb32_img_buf = (rgb24 *)img_buf;    
+	//   int *fd = (int *)fbp;    
+	//     char *buf = (char *)img_buf;
 
-    //防止摄像头采集宽高比显存大
-    if(screensize < img_width * img_height * img_bits / 8)
-    {
-        printf("the imgsize is too large\n");
-        return -1;
-    }
+	//防止摄像头采集宽高比显存大
+	if(screensize < img_width * img_height * img_bits / 8)
+	{
+		printf("the imgsize is too large\n");
+		return -1;
+	}
 	int i;
-    /*不同的位深度图片使用不同的显示方案*/
-switch (img_bits)
-    {
-        case 32:
-            for(row = 0; row < img_height*3/2; row++)
-                {
-                    for(column = 0; column < img_width*3/2; column++)
-                    {
-                        //由于摄像头分辨率没有帧缓冲大，完成显示后，需要强制换行，帧缓冲是线性的，使用row * vinfo.xres_virtual换行
-                //      rgb32_fbp[row * Framex + column].r = rgb32_img_buf[num].r;
-                  //    rgb32_fbp[row * Framex + column].g = rgb32_img_buf[num].g;
-        	    //  rgb32_fbp[row * Framex + column].b = rgb32_img_buf[num].b;
-	
-			//printf("---------r:%d,g:%d,b:%d------\n",rgb32_img_buf[num].r,rgb32_img_buf[num].g,rgb32_img_buf[num].b);
-			//sleep(1);
-			FrameBuffer[row *1600*2 + column*2] = buf[num];
-			num++;
-                    }
-                }    
-	    break;
-        default:
-            break;
-    }
-  return 0;
+	/*不同的位深度图片使用不同的显示方案*/
+	switch (img_bits)
+	{
+		case 32:
+			for(row = 0; row < img_height; row++)
+			{
+				for(column = 0; column < img_width; column++)
+				{
+					//由于摄像头分辨率没有帧缓冲大，完成显示后，需要强制换行，帧缓冲是线性的，使用row * vinfo.xres_virtual换行
+				
+				//printf(" -------------%d-\n",sizeof(rgb32_img_buf[num]));r
+					rgb32_fbp[row*960+column].r = rgb32_img_buf[num].r;
+					rgb32_fbp[row*960+column].g = rgb32_img_buf[num].g;
+					rgb32_fbp[row*960+column].b = rgb32_img_buf[num].b;
+
+					//printf("---------r:%d,g:%d,b:%d------\n",rgb32_img_buf[num].r,rgb32_img_buf[num].g,rgb32_img_buf[num].b);
+					num++;
+				}
+			}  
+			break;
+		default:
+			break;
+	}
+	return 0;
 }
 
 
