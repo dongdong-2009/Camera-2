@@ -7,7 +7,7 @@
 #include "camera_rgb.h"
 
 #define MY_WIDTH		480	
-#define MY_HEIGHT		272
+#define MY_HEIGHT		544
 #define NUM_FRAM                50
 
 int main()
@@ -31,8 +31,7 @@ int main()
 	int i;
 	while(1){	
 		get_picture(buffer);
-		rgb16torgb24(buffer,image);
-		write_data_to_fb(FrameBuffer, Frame_fd,image,MY_WIDTH,MY_HEIGHT,Framebpp);	
+		write_data_to_fb(FrameBuffer, Frame_fd,buffer,MY_WIDTH,MY_HEIGHT,Framebpp);	
 		}
 	//	endtime = clock();
 	//	totaltime = (dogble)( (endtime - starttime)/(double)CLOCKS_PER_SEC );

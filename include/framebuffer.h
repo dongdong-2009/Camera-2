@@ -46,7 +46,6 @@ typedef struct {
 *height：用>户的高  
 *bits：帧缓冲的位深
 *******************************************************/
-void rgb16torgb24(void*buffer,void*image);
 
 int write_data_to_fb(void *fbp, int fbfd, void *img_buf, unsigned int img_width, \
 			unsigned int img_height, unsigned int img_bits);
