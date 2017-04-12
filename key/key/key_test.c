@@ -21,7 +21,7 @@ int main(int argc, char **argv)
 	while (1)
 	{
 		read(fd, key_vals, sizeof(key_vals));
-		if (!key_vals[0] || !key_vals[1] || !key_vals[2] || !key_vals[3])
+		if (key_vals[0] || key_vals[1] || key_vals[2] || key_vals[3])
 		{
 			printf("%04d key pressed: %d %d %d %d\n", cnt++, key_vals[0], key_vals[1], key_vals[2], key_vals[3]);
 		}

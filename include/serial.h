@@ -3,7 +3,7 @@
 
 #define BUFFSIZE  	1024
 
-int fd;
+int fd_uart;
 
 void open_uart(void);		//初始化串口
 

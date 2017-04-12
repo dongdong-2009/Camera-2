@@ -28,14 +28,9 @@ int main(int argc, char **argv)
 	{
 		printf("can't open!\n");
 	}
-
 	while (1)
 	{
 		read(fd, key_vals, sizeof(key_vals));
-		//if (!key_vals[0] || !key_vals[1] )
-		//{
-		//	printf("%04d key pressed: %d %d \n", cnt++, key_vals[0], key_vals[1]);
-		//}
 		key=key_scan();
 		if(key)
 		{
@@ -53,7 +48,6 @@ int main(int argc, char **argv)
 			}		
 		}	
 	}
-	
 	return 0;
 }
 

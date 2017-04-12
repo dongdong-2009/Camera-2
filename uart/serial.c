@@ -62,7 +62,7 @@ static int uart_init(int arg, int baud)
 
 void open_uart(void )                     // ¿¿¿¿2
 {
-        if((fd = uart_init(3, 0)) <0){
+        if((fd_uart = uart_init(3, 0)) <0){
                 perror("Open uart err \n");
                 return ;
         }
@@ -73,7 +73,7 @@ void read_buff(char *ptr){
        
 	memset(buf, 0 ,sizeof(buf));
         
-	if((len = read(fd,buf,BUFFSIZE)) < 0)
+	if((len = read(fd_uart,buf,BUFFSIZE)) < 0)
 	{
 		perror("read error");
 		exit(1);
@@ -86,15 +86,16 @@ void serial_send(const char *buf)        //通过串口发送一传字符串
 {
 	size_t len,ret;
 	len = sizeof(buf);
-	if((ret = write(fd, buf,len)) < 0){
-	perror("write device error");
-	exit(1);	
+	ret = write(fd_uart, buf,len);
+	if(ret < 0){
+		printf("usart error...\n");
+		return ;
 	}
 }
 
 void close_uart()
 {
-	close(fd);
+	close(fd_uart);
 }
 
 
