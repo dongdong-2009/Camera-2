@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "framebuffer.h"
+#include "show_font.h"
 #include <linux/fb.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -14,41 +15,41 @@ int Framex = 0;
 
 int init_FrameBuffer(void)  
 {  
-    struct fb_var_screeninfo vinfo;
-    struct fb_fix_screeninfo finfo;
     Frame_fd = open("/dev/fb0" , O_RDWR);  
     if(-1 == Frame_fd)  
     {  
         perror("open frame buffer fail");  
         return -1 ;   
     }  
-    
     // Get fixed screen information
     if (ioctl(Frame_fd, FBIOGET_FSCREENINFO, &finfo))
     {
         printf("Error reading fixed information.\n");
         exit(0);
     }
-
     // Get variable screen information
     if (ioctl(Frame_fd, FBIOGET_VSCREENINFO, &vinfo)) 
     {            
         printf("Error reading variable information.\n");
         exit(0);
     }
-    //这里把整个显存一起初始化（xres_virtual 表示显存的x，比实际的xres大,bits_per_pixel位深）
+ 
+    line_width  = vinfo.xres * vinfo.bits_per_pixel / 8;
+    pixel_width = vinfo.bits_per_pixel / 8;
+   //这里把整个显存一起初始化（xres_virtual 表示显存的x，比实际的xres大,bits_per_pixel位深）
     screensize = vinfo.xres_virtual * vinfo.yres_virtual * vinfo.bits_per_pixel /8;
     //获取实际的位色，这里很关键，后面转换和填写的时候需要
     Framebpp = vinfo.bits_per_pixel;
     printf("%dx%d, %dbpp  screensize is %ld\n", vinfo.xres_virtual, vinfo.yres_virtual, vinfo.bits_per_pixel,screensize);
     
     //映射出来，用户直接操作
-    FrameBuffer = mmap(0, screensize, PROT_READ | PROT_WRITE , MAP_SHARED , Frame_fd ,0 );  
-    if(FrameBuffer == (void *)-1)  
+    fbmem = mmap(0, screensize, PROT_READ | PROT_WRITE , MAP_SHARED , Frame_fd ,0 );  
+    if(fbmem == (void *)-1)  
     {  
-        perror("memory map fail");  
-        return -2 ;  
-    }  
+	    perror("memory map fail");  
+	    return -2 ;  
+    }
+    memset(fbmem,0,screensize);  
     return 0 ;   
 }  
 
@@ -60,15 +61,13 @@ int write_data_to_fb(void *fbp, int fbfd, void *img_buf, unsigned int img_width,
 	rgb32_frame *rgb32_fbp = (rgb32_frame *)fbp;
 	rgb16 *rgb16_img_buf = (rgb16 *)img_buf;    
 	//   int *fd = (int *)fbp;    
-	//     char *buf = (char *)img_buf;
-
+	//     char *buf = (char *)img_buf;	
 	//防止摄像头采集宽高比显存大
 	if(screensize < img_width * img_height * img_bits / 8)
 	{
 		printf("the imgsize is too large\n");
 		return -1;
 	}
-	int i;
 	/*不同的位深度图片使用不同的显示方案*/
 	switch (img_bits)
 	{
@@ -77,15 +76,17 @@ int write_data_to_fb(void *fbp, int fbfd, void *img_buf, unsigned int img_width,
 			{
 				for(column = 0; column < img_width; column++)
 				{
-					//由于摄像头分辨率没有帧缓冲大，完成显示后，需要强制换行，帧缓冲是线性的，使用row * vinfo.xres_virtual换行
-				
-			rgb32_fbp[row*480+column].r = ((rgb16_img_buf[num].x + (rgb16_img_buf[num].y << 8) & RGB565_RED)) >> 8;  
-			rgb32_fbp[row*480+column].g= ((rgb16_img_buf[num].x + (rgb16_img_buf[num].y << 8) & RGB565_GREEN)) >> 3;  
-			rgb32_fbp[row*480+column].b= ((rgb16_img_buf[num].x + (rgb16_img_buf[num].y << 8) & RGB565_BLUE)) << 3;  
-	//printf("---------r:%d,g:%d,b:%d------\n",rgb32_img_buf[num].r,rgb32_img_buf[num].g,rgb32_img_buf[num].b);
-					num++;
+					//由于摄像头分辨率没有帧缓冲大，完成显示后，需要强制换行，帧缓冲是线性的，使用row * vinfo.xres_virtual换行	
+			rgb32_fbp[row*480+column].r =((((rgb16_img_buf[num].x + (rgb16_img_buf[num].y << 8)\
+						     & RGB565_RED)) >> 8) | temp_show[num].r);  
+			rgb32_fbp[row*480+column].g= ((((rgb16_img_buf[num].x + (rgb16_img_buf[num].y << 8)\
+				 		     & RGB565_GREEN)) >> 3) | temp_show[num].g);  
+			rgb32_fbp[row*480+column].b= ((((rgb16_img_buf[num].x + (rgb16_img_buf[num].y << 8)\
+						     & RGB565_BLUE)) << 3) |temp_show[num].b);  
+			//printf("---------r:%d,g:%d,b:%d------\n",rgb32_img_buf[num].r,rgb32_img_buf[num].\
+				g,rgb32_img_buf[num].b);
+				num++;
 				}
-				//printf("num =====:%d",num);
 			}  
 			break;
 		default:
@@ -98,7 +99,7 @@ int write_data_to_fb(void *fbp, int fbfd, void *img_buf, unsigned int img_width,
 //退出framebuffer  
 int exit_Framebuffer(void)  
 {  
-    munmap(FrameBuffer , screensize);  
+    munmap(fbmem, screensize);  
     close(Frame_fd);  
     return 0 ;   
 }

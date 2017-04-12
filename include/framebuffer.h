@@ -4,14 +4,21 @@
 #define uint_8 char
 #include <stdio.h>
 
+
+#define MY_WIDTH		480	
+#define MY_HEIGHT		544
+
 #define RGB565_RED      0xf800  
 #define RGB565_GREEN    0x07e0  
 #define RGB565_BLUE     0x001f 
 
+
 int Frame_fd;
 long int screensize; 
-char *FrameBuffer;
+unsigned char *fbmem;
 unsigned int Framebpp;
+struct fb_var_screeninfo vinfo;
+struct fb_fix_screeninfo finfo;
 
 int init_FrameBuffer(void);//初始化帧缓存
 

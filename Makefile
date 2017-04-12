@@ -1,12 +1,12 @@
 GCC = arm-linux-gcc 
-SUBDIRS = main camera lcd obj
+SUBDIRS = main camera lcd  char_font obj
 #key rocker uart
 
 BIN = debug
-OBJS = camera_rgb.o framebuffer.o main.o
+OBJS = camera_rgb.o framebuffer.o  show_font.o main.o
 OBJS_DIR = obj
 BIN_DIR = bin
-CFLAG = -I../include
+CFLAG = -I ../include
 RM = rm -rf
 
 export GCC OBJS OBJS_DIR BIN_DIR BIN CFLAG 

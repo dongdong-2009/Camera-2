@@ -127,7 +127,7 @@ int set_Camera_format(int cam_width,int cam_hight){
 static int get_CameraBuf(){
 	struct v4l2_requestbuffers req;    
 	CLEAR(req);
-	req.count = 4;  //摄像头图片缓存buf个数，这里一般设置4个
+	req.count = 2;  //摄像头图片缓存buf个数，这里一般设置4个
 	req.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	req.memory = V4L2_MEMORY_MMAP;
 	if (ioctl(fd,VIDIOC_REQBUFS,&req) <0)
@@ -141,12 +141,12 @@ static int get_CameraBuf(){
 
 void map_buf(void){
 	get_CameraBuf();
-	buffers = calloc(4, sizeof(*buffers));
+	buffers = calloc(2, sizeof(*buffers));
 	if (!buffers) {
 		fprintf(stderr, "Out of memory\n");
 		exit(1);    
 	}
-	for (numBufs = 0; numBufs < 4; numBufs++)
+	for (numBufs = 0; numBufs < 2; numBufs++)
 	{
 		struct v4l2_buffer tmp_buf ;   //摄像头缓冲buf临时保存buf
 		CLEAR(tmp_buf);
@@ -281,7 +281,7 @@ int stopcon(void)
 int bufunmap(void)  
 {  
     int i ;   
-    for(i = 0 ; i < 4 ; i++)
+    for(i = 0 ; i < 2 ; i++)
     {
        munmap(buffers[i].start ,buffers[i].length);
     }
