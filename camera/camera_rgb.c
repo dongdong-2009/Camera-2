@@ -15,6 +15,7 @@
 #include <linux/videodev2.h>
 
 #include "camera_rgb.h"
+static int fd;
 
 int xioctl(int fd, int request, void * arg)
 {

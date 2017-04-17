@@ -6,7 +6,6 @@
 #define CLEAR(x)    memset(&(x), 0, sizeof (x))
 
 
-int fd;
 int cam_width;
 int cam_hight;
 unsigned int cap_image_size;

@@ -94,9 +94,8 @@ void *my_usart_pth(void *c){
 	open_uart();    //初始化串口
 	while(1){
 		serial_send(usart_count);
-		printf("-----------1----------\n");
-		//usleep(10000);
-		sleep(1);
+	//	printf("-----------1----------\n");
+		usleep(10000);
 	//	read_buff(buff);
 		
 	//	memset(buff,0,BUFFSIZE);
