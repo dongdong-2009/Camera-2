@@ -1,8 +1,25 @@
 #include "pthread_fun.h"
 
+static int flip_falg = 0;
 
 
 static int key_falg = 0;
+
+void swap_buffer(void *ptr){		//buff旋转180度
+
+	int i,j,m;
+	rgb16 tmp;
+	rgb16 *me = (rgb16 *)ptr;
+	for(m = 0,j = (MY_HEIGHT/2-1);m < j;m++,j--)
+	{
+		for(i = 0; i < MY_WIDTH;i++)
+		{
+			tmp = me[m*MY_WIDTH+i];	
+			me[m*MY_WIDTH+i] = me[j*MY_WIDTH+i];
+			me[j*MY_WIDTH+i] = tmp;
+		}
+	}
+}
 
 void *camera_show(void * c) //摄像头线程函数
 {
@@ -19,9 +36,12 @@ void *camera_show(void * c) //摄像头线程函数
         map_buf();
 
         printf("-------%s,line = %d\n",__FUNCTION__,__LINE__);
-        startcon();     
+        startcon();
+	lcd_put_ascii(50,50,'A');     
         while(1){       
                 get_picture(buffer);
+		if(flip_falg)
+		swap_buffer(buffer);
                 write_data_to_fb(fbmem, Frame_fd,buffer,MY_WIDTH,MY_HEIGHT,Framebpp);
                 }
         stopcon();
@@ -52,7 +72,7 @@ void *my_key_pth(void *c)
 	{
 		printf("can't open!\n");
 	}
-	lcd_put_chinese(30,30,"关");
+	//lcd_put_chinese(30,40,"关");
 	while (1)
 	{
 		read(fd, key_vals, sizeof(key_vals));
@@ -80,6 +100,12 @@ void *my_key_pth(void *c)
 					}
 					break;
 				case 2:
+					if(flip_falg)
+						flip_falg = 0;
+					else
+						flip_falg = 1;
+					break;
+				case 3:
 					printf("key2 !!\n");
 					break;
 				default:

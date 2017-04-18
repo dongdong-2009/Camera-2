@@ -22,6 +22,8 @@ unsigned char key_vals[2]; 	//key个数
 unsigned char usart_count[4]; 	//usart发个数
 
 
+//void swap_buffer(void *ptr);//buff旋转180度
+
 void *camera_show(void *); //摄像头采集线程函数
 
 void *my_key_pth(void *); //按键线程函数

@@ -4711,9 +4711,9 @@ void lcd_put_chinese(int x, int y, unsigned char *str)
 		for (j = 0; j < 2; j++)
 		{
 			byte = dots[i*2 + j];
-			for (b = 7; b >=0; b--)
+			for (b = 0; b < 8 ; b++)
 			{
-				if (byte & (1<<b))
+				if (byte & (1 << b))
 				{
 					/* show */
 					temp_show[(x+j*8+7-b)*480+(y+i)].r = 0xf8;

@@ -56,9 +56,10 @@ int init_FrameBuffer(void)
 //写入framebuffer   fbp：帧缓冲首地址   fbfd：帧缓冲fd   img_buf:采集到的图片首地址  width：用户的宽 height：用户的高  bits：帧缓冲的位深 
 int write_data_to_fb(void *fbp, int fbfd, void *img_buf, unsigned int img_width, unsigned int img_height, unsigned int img_bits)
 {   
-	int row, column;
+	int row, column,i,x;
 	int num = 0;        //img_buf 中的某个像素点元素的下标
 	rgb32_frame *rgb32_fbp = (rgb32_frame *)fbp;
+	rgb32_frame tmp;
 	rgb16 *rgb16_img_buf = (rgb16 *)img_buf;    
 	//   int *fd = (int *)fbp;    
 	//     char *buf = (char *)img_buf;	
@@ -87,7 +88,7 @@ int write_data_to_fb(void *fbp, int fbfd, void *img_buf, unsigned int img_width,
 				g,rgb32_img_buf[num].b);
 				num++;
 				}
-			}  
+			} 
 			break;
 		default:
 			break;
