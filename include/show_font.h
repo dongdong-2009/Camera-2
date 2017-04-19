@@ -18,7 +18,7 @@
 
 
 
-rgb32_frame temp_show[MY_WIDTH*MY_HEIGHT]; //显示汉字的模板
+rgb32_frame temp_show[544][480]; //显示汉字的模板
 
 unsigned int line_width;
 unsigned int pixel_width;

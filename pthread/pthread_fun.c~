@@ -1,10 +1,10 @@
 #include "pthread_fun.h"
 
-static int flip_falg = 0;		//Ğı×ª±êÖ¾Î»
+static int flip_falg = 0;		//æ—‹è½¬æ ‡å¿—ä½
 
 static int key_falg = 0;
 
-static void swap_buffer(void *ptr){		//buffĞı×ª180¶È
+static void swap_buffer(void *ptr){		//buffæ—‹è½¬180åº¦
 
 	int i,j,m;
 	rgb16 tmp;
@@ -20,7 +20,7 @@ static void swap_buffer(void *ptr){		//buffĞı×ª180¶È
 	}
 }
 
-void *camera_show(void * c) //ÉãÏñÍ·Ïß³Ìº¯Êı
+void *camera_show(void * c) //æ‘„åƒå¤´çº¿ç¨‹å‡½æ•°
 {
        unsigned char buffer[MY_WIDTH*MY_HEIGHT*2];	//RGB56->RGB888->RGB8888
 
@@ -49,7 +49,7 @@ void *camera_show(void * c) //ÉãÏñÍ·Ïß³Ìº¯Êı
         close_cameral();
         return 0;
 }
-static unsigned char key_scan(void)	//»ñÈ¡°´¼ü
+static unsigned char key_scan(void)	//è·å–æŒ‰é”®
 {
          static unsigned char key_up = 1;
          if(key_up&&(key_vals[0]==0||key_vals[1]==0))
@@ -71,11 +71,6 @@ void *my_key_pth(void *c)
 	{
 		printf("can't open!\n");
 	}
-	lcd_put_ascii(130,350,'L');
-	
-	lcd_put_ascii(130,250,'H');
-	
-	lcd_put_ascii(130,150,'Y');
 	while (1)
 	{
 		read(fd, key_vals, sizeof(key_vals));
@@ -87,11 +82,17 @@ void *my_key_pth(void *c)
 				case 1:
 					if(key_falg)
 					{
+						printf("-----%d----\n",key_falg);	
+						lcd_del(60,30,MY_HANZI);
+						lcd_put_chinese(60,30,"å…³");
 						key_falg = 0;
 						usart_count[2] = 0x00;
 					}
 					else 
 					{
+						printf("-----%d----\n",key_falg);	
+						lcd_del(60,30,MY_HANZI);
+						lcd_put_chinese(60,30,"å¼€");
 						key_falg = 1;
 						usart_count[2] = 0x01;
 					}
@@ -99,17 +100,17 @@ void *my_key_pth(void *c)
 				case 2:
 					if(flip_falg){
 						flip_falg = 0;
-						lcd_del(30,450,MY_HANZI);
-						lcd_del(30,430,MY_HANZI);
-						lcd_del(30,410,MY_HANZI);
-						lcd_del(30,390,MY_HANZI);
+						lcd_del(450,30,MY_HANZI);
+						lcd_del(430,30,MY_HANZI);
+						lcd_del(410,30,MY_HANZI);
+						lcd_del(390,30,MY_HANZI);
 					}
 					else{
 						flip_falg = 1;
-						lcd_put_chinese(30,450,"Í¼");
-						lcd_put_chinese(30,430,"Ïñ");
-						lcd_put_chinese(30,410,"·­");
-						lcd_put_chinese(30,390,"×ª");
+						lcd_put_chinese(450,30,"å›¾");
+						lcd_put_chinese(430,30,"åƒ");
+						lcd_put_chinese(410,30,"ç¿»");
+						lcd_put_chinese(390,30,"è½¬");
 					    }
 					break;
 				case 3:
@@ -124,7 +125,7 @@ void *my_key_pth(void *c)
 
 void *my_usart_pth(void *c){
 	unsigned char buff[BUFFSIZE];
-	open_uart();    //³õÊ¼»¯´®¿Ú
+	open_uart();    //åˆå§‹åŒ–ä¸²å£
 	while(1){
 		serial_send(usart_count);
 	//	printf("-----------1----------\n");

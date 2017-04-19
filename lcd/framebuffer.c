@@ -79,11 +79,11 @@ int write_data_to_fb(void *fbp, int fbfd, void *img_buf, unsigned int img_width,
 				{
 					//由于摄像头分辨率没有帧缓冲大，完成显示后，需要强制换行，帧缓冲是线性的，使用row * vinfo.xres_virtual换行	
 			rgb32_fbp[row*480+column].r =((((rgb16_img_buf[num].x + (rgb16_img_buf[num].y << 8)\
-						     & RGB565_RED)) >> 8) | temp_show[num].r);  
+						     & RGB565_RED)) >> 8) | temp_show[row][column].r);  
 			rgb32_fbp[row*480+column].g= ((((rgb16_img_buf[num].x + (rgb16_img_buf[num].y << 8)\
-				 		     & RGB565_GREEN)) >> 3) | temp_show[num].g);  
+				 		     & RGB565_GREEN)) >> 3) | temp_show[row][column].g);  
 			rgb32_fbp[row*480+column].b= ((((rgb16_img_buf[num].x + (rgb16_img_buf[num].y << 8)\
-						     & RGB565_BLUE)) << 3) |temp_show[num].b);  
+						     & RGB565_BLUE)) << 3) |temp_show[row][column].b);  
 			//printf("---------r:%d,g:%d,b:%d------\n",rgb32_img_buf[num].r,rgb32_img_buf[num].\
 				g,rgb32_img_buf[num].b);
 				num++;

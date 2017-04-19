@@ -4684,7 +4684,6 @@ void lcd_put_ascii(int x, int y,unsigned char c)
 	unsigned char byte;
 	int m;
 	rgb32_frame tmp;
-	//rgb16 *rgb16_img_buf = (rgb16 *)img_buf;
 	for (i = 0; i < 16; i++)
 	{
 		byte = dots[i];
@@ -4692,21 +4691,29 @@ void lcd_put_ascii(int x, int y,unsigned char c)
 		{
 			if (byte & (1<<b))
 			{
-				temp_show[(x+7-b)+(y+i)*480].r = 0xf8;
-				temp_show[(x+7-b)+(y+i)*480].g = 0xfc;
-				temp_show[(x+7-b)+(y+i)*480].b = 0xf8;
+				temp_show[x+7-b][(y+i)].r = 0xf8;
+				temp_show[x+7-b][(y+i)].g = 0xfc;
+				temp_show[x+7-b][(y+i)].b = 0xf8;
 			}
 		}
 	}
-	for (i = 0,m = (16-1); i < m; i++,m--)  //字体位置调整
-		for (j = 0; j < 2; j++)
+	for (i = 0,m = (16-1); i < m; i++,m--)  //字体的翻转
+		for (b = 15; b >=0; b--)
 		{
-			for (b = 7; b >=0; b--)
-			{
-				tmp =  temp_show[(x+j*8+7-b)+(y+i)*480];
-				temp_show[(x+j*8+7-b)+(y+i)*480] = temp_show[(x+j*8+7-b)+(y+m)*480];
-				temp_show[(x+j*8+7-b)+(y+m)*480] = tmp;
-			}
+			tmp =  temp_show[x+15-b][y+i];
+			temp_show[x+15-b][y+i] = temp_show[x+15-b][y+m];
+			temp_show[x+15-b][y+m] = tmp;
+		}
+	rgb32_frame temp[16][16];
+	for(i = 0;i < 16;i++)
+		for(j = 0;j < 16;j++)
+		{
+			temp[i][j] = temp_show[x+15-j][y+i];
+		}
+	for(i = 0;i < 16;i++)
+		for(j = 0;j < 16;j++)
+		{
+			temp_show[x+i][y+j] = temp[i][j];
 		}
 }
 
@@ -4721,36 +4728,43 @@ void lcd_put_chinese(int x, int y, unsigned char *str)
 
 	int i, j, b;
 	for (i = 0; i < 16; i++)
-		for (j = 1; j >= 0; j--)
+		for (j = 0; j < 2; j++)
 		{
 			byte = dots[i*2 + j];
 			for (b = 0; b < 8 ; b++)
 			{
 				if (byte & (1 << b))
 				{
-					/* show */
-				//	temp_show[(x+j*8+7-b)*480+(y+i)].r = 0xf8;
-				//	temp_show[(x+j*8+7-b)*480+(y+i)].g = 0xfc;
-				//	temp_show[(x+j*8+7-b)*480+(y+i)].b = 0xf8;
-					temp_show[(x+j*8+7-b)+(y+i)*480].r = 0xf8;
-					temp_show[(x+j*8+7-b)+(y+i)*480].g = 0xfc;
-					temp_show[(x+j*8+7-b)+(y+i)*480].b = 0xf8;
-				
-					
+					temp_show[x+j*8+7-b][(y+i)].r = 0xf8;
+					temp_show[x+j*8+7-b][(y+i)].g = 0xfc;
+					temp_show[x+j*8+7-b][(y+i)].b = 0xf8;
 				}
 			}
 		}
+
 		for (i = 0,m = (16-1); i < m; i++,m--)	//字体的翻转
                         for (j = 0; j < 2; j++)
                         {
 				for (b = 7; b >=0; b--)
 				{
-					tmp =  temp_show[(x+j*8+7-b)+(y+i)*480];
-					temp_show[(x+j*8+7-b)+(y+i)*480] = temp_show[(x+j*8+7-b)+(y+m)*480];
-					temp_show[(x+j*8+7-b)+(y+m)*480] = tmp;
+					tmp =  temp_show[x+j*8+7-b][y+i];
+					temp_show[x+j*8+7-b][y+i] = temp_show[x+j*8+7-b][y+m];
+					temp_show[x+j*8+7-b][y+m] = tmp;
 				}
-                        }	
+                        }
+		rgb32_frame temp[16][16];
+		for(i = 0;i < 16;i++)
+			for(j = 0;j < 16;j++)
+			{
+				temp[i][j] = temp_show[x+15-j][y+i];	
+			}
+		for(i = 0;i < 16;i++)
+			for(j = 0;j < 16;j++)
+			{
+				 temp_show[x+i][y+j] = temp[i][j];	
+			}
 }
+
 void lcd_del(int x, int y, int mode)
 {
 	int i, j, b;
@@ -4758,11 +4772,11 @@ void lcd_del(int x, int y, int mode)
 	{
 		for (i = 0; i < 16; i++)
 		{
-			for (b = 7; b >= 0; b--)
+			for (b = 15; b >= 0; b--)
 			{
-				temp_show[(x+7-b)+(y+i)*480].r = 0;//0xf8;
-				temp_show[(x+7-b)+(y+i)*480].g = 0;//0xfc;
-				temp_show[(x+7-b)+(y+i)*480].b = 0;//0xf8;
+				temp_show[x+15-b][(y+i)].r = 0;//0xf8;
+				temp_show[x+15-b][(y+i)].g = 0;//0xfc;
+				temp_show[x+15-b][(y+i)].b = 0;//0xf8;
 			}
 		}		
 	}
@@ -4773,9 +4787,9 @@ void lcd_del(int x, int y, int mode)
 			{
 				for (b = 7; b >=0; b--)
 				{
-					temp_show[(x+j*8+7-b)+(y+i)*480].r = 0;//0xf8;
-					temp_show[(x+j*8+7-b)+(y+i)*480].g = 0;//0xfc;
-					temp_show[(x+j*8+7-b)+(y+i)*480].b = 0;//0xf8;
+					temp_show[x+j*8+7-b][(y+i)].r = 0;//0xf8;
+					temp_show[x+j*8+7-b][(y+i)].g = 0;//0xfc;
+					temp_show[x+j*8+7-b][(y+i)].b = 0;//0xf8;
 				}
 			}	
 	}
