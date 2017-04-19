@@ -11,18 +11,17 @@
 #include "camera_rgb.h"
 #include "show_font.h"
 #include "serial.h"
+#include "rgb2bmp.h"
+
+
 //------------------key.h-------------//
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <stdio.h>
 
 #define NUM_FRAM                50
 unsigned char key_vals[2]; 	//key个数
 unsigned char usart_count[4]; 	//usart发个数
-
-
-//void swap_buffer(void *ptr);//buff旋转180度
 
 void *camera_show(void *); //摄像头采集线程函数
 

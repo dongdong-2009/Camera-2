@@ -1,9 +1,9 @@
 GCC = arm-linux-gcc 
-SUBDIRS = main camera lcd  char_font pthread uart obj
+SUBDIRS = main camera lcd  char_font pthread uart rgb2bmp obj
 #key rocker uart
 
 BIN = debug
-OBJS = camera_rgb.o framebuffer.o  show_font.o pthread_fun.o serial.o main.o
+OBJS = camera_rgb.o framebuffer.o  show_font.o pthread_fun.o rgb2bmp.o serial.o main.o
 OBJS_DIR = obj
 BIN_DIR = bin
 CFLAG = -I ../include 

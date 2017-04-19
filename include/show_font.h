@@ -10,7 +10,7 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <string.h>
-
+#include "pthread_fun.h"
 
 #define FONTDATAMAX 4096
 #define MY_HANZI    1

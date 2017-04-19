@@ -1,11 +1,10 @@
 #include "pthread_fun.h"
 
-static int flip_falg = 0;
-
+static int flip_falg = 0;		//旋转标志位
 
 static int key_falg = 0;
 
-void swap_buffer(void *ptr){		//buff旋转180度
+static void swap_buffer(void *ptr){		//buff旋转180度
 
 	int i,j,m;
 	rgb16 tmp;
@@ -23,10 +22,7 @@ void swap_buffer(void *ptr){		//buff旋转180度
 
 void *camera_show(void * c) //摄像头线程函数
 {
-        char buffer[MY_WIDTH*MY_HEIGHT*2];
-        char image[MY_WIDTH*MY_HEIGHT*3];
-        clock_t starttime, endtime;
-        double totaltime;
+       unsigned char buffer[MY_WIDTH*MY_HEIGHT*2];	//RGB56->RGB888->RGB8888
 
         open_cameral(VIDEO_PATH);
         init_FrameBuffer();
@@ -37,13 +33,16 @@ void *camera_show(void * c) //摄像头线程函数
 
         printf("-------%s,line = %d\n",__FUNCTION__,__LINE__);
         startcon();
-	lcd_put_ascii(50,50,'A');     
-        while(1){       
+        int num = 0;
+	while(1){       
                 get_picture(buffer);
 		if(flip_falg)
 		swap_buffer(buffer);
-                write_data_to_fb(fbmem, Frame_fd,buffer,MY_WIDTH,MY_HEIGHT,Framebpp);
-                }
+		if(num == 200)
+	         MY_RGB2BMP(buffer,MY_WIDTH,MY_HEIGHT);
+		write_data_to_fb(fbmem, Frame_fd,buffer,MY_WIDTH,MY_HEIGHT,Framebpp);
+                num++;
+		}
         stopcon();
         bufunmap();
         exit_Framebuffer();
@@ -72,7 +71,6 @@ void *my_key_pth(void *c)
 	{
 		printf("can't open!\n");
 	}
-	//lcd_put_chinese(30,40,"关");
 	while (1)
 	{
 		read(fd, key_vals, sizeof(key_vals));
@@ -85,16 +83,16 @@ void *my_key_pth(void *c)
 					if(key_falg)
 					{
 						printf("-----%d----\n",key_falg);	
-						lcd_del(30,30,MY_HANZI);
-						lcd_put_chinese(30,30,"关");
+						lcd_del(60,30,MY_HANZI);
+						lcd_put_chinese(60,30,"关");
 						key_falg = 0;
 						usart_count[2] = 0x00;
 					}
 					else 
 					{
 						printf("-----%d----\n",key_falg);	
-						lcd_del(30,30,MY_HANZI);
-						lcd_put_chinese(30,30,"开");
+						lcd_del(60,30,MY_HANZI);
+						lcd_put_chinese(60,30,"开");
 						key_falg = 1;
 						usart_count[2] = 0x01;
 					}

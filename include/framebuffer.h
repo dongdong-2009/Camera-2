@@ -2,6 +2,7 @@
 #define __FRAMEBUFFER_H__
 
 #define uint_8 char
+#include <linux/fb.h>
 #include <stdio.h>
 
 

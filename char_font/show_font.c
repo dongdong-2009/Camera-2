@@ -1,5 +1,4 @@
 #include "show_font.h"
-#include "framebuffer.h"
 static const unsigned char fontdata_8x16[FONTDATAMAX] = {
 
 	/* 0 0x00 '^@' */
@@ -4680,23 +4679,35 @@ void lcd_put_pixel(int x, int y, unsigned int color)
 //fbfd：帧缓冲fd
 void lcd_put_ascii(int x, int y,unsigned char c)
 {
-        unsigned char *dots = (unsigned char *)&fontdata_8x16[c*16];
-        int i, b;
-        unsigned char byte;
+	unsigned char *dots = (unsigned char *)&fontdata_8x16[c*16];
+	int i,j, b;
+	unsigned char byte;
+	int m;
+	rgb32_frame tmp;
 	//rgb16 *rgb16_img_buf = (rgb16 *)img_buf;
-        for (i = 0; i < 16; i++)
-        {
-                byte = dots[i];
-                for (b = 7; b >= 0; b--)
-                {
-                        if (byte & (1<<b))
+	for (i = 0; i < 16; i++)
+	{
+		byte = dots[i];
+		for (b = 7; b >= 0; b--)
+		{
+			if (byte & (1<<b))
 			{
-				temp_show[(x+7-b)*480+(y+i)].r = 0xf8;
-				temp_show[(x+7-b)*480+(y+i)].g = 0xfc;
-				temp_show[(x+7-b)*480+(y+i)].b = 0xf8;
-                        }
-                }
-        }
+				temp_show[(x+7-b)+(y+i)*480].r = 0xf8;
+				temp_show[(x+7-b)+(y+i)*480].g = 0xfc;
+				temp_show[(x+7-b)+(y+i)*480].b = 0xf8;
+			}
+		}
+	}
+	for (i = 0,m = (16-1); i < m; i++,m--)  //字体位置调整
+		for (j = 0; j < 2; j++)
+		{
+			for (b = 7; b >=0; b--)
+			{
+				tmp =  temp_show[(x+j*8+7-b)+(y+i)*480];
+				temp_show[(x+j*8+7-b)+(y+i)*480] = temp_show[(x+j*8+7-b)+(y+m)*480];
+				temp_show[(x+j*8+7-b)+(y+m)*480] = tmp;
+			}
+		}
 }
 
 void lcd_put_chinese(int x, int y, unsigned char *str)
@@ -4705,10 +4716,12 @@ void lcd_put_chinese(int x, int y, unsigned char *str)
 	unsigned int where = str[1] - 0xA1;
 	unsigned char *dots = hzkmem + (area * 94 + where)*32;
 	unsigned char byte;
+	rgb32_frame tmp;
+	int m;
 
 	int i, j, b;
 	for (i = 0; i < 16; i++)
-		for (j = 0; j < 2; j++)
+		for (j = 1; j >= 0; j--)
 		{
 			byte = dots[i*2 + j];
 			for (b = 0; b < 8 ; b++)
@@ -4716,12 +4729,27 @@ void lcd_put_chinese(int x, int y, unsigned char *str)
 				if (byte & (1 << b))
 				{
 					/* show */
-					temp_show[(x+j*8+7-b)*480+(y+i)].r = 0xf8;
-					temp_show[(x+j*8+7-b)*480+(y+i)].g = 0xfc;
-					temp_show[(x+j*8+7-b)*480+(y+i)].b = 0xf8;
+				//	temp_show[(x+j*8+7-b)*480+(y+i)].r = 0xf8;
+				//	temp_show[(x+j*8+7-b)*480+(y+i)].g = 0xfc;
+				//	temp_show[(x+j*8+7-b)*480+(y+i)].b = 0xf8;
+					temp_show[(x+j*8+7-b)+(y+i)*480].r = 0xf8;
+					temp_show[(x+j*8+7-b)+(y+i)*480].g = 0xfc;
+					temp_show[(x+j*8+7-b)+(y+i)*480].b = 0xf8;
+				
+					
 				}
 			}
-		}	
+		}
+		for (i = 0,m = (16-1); i < m; i++,m--)	//字体的翻转
+                        for (j = 0; j < 2; j++)
+                        {
+				for (b = 7; b >=0; b--)
+				{
+					tmp =  temp_show[(x+j*8+7-b)+(y+i)*480];
+					temp_show[(x+j*8+7-b)+(y+i)*480] = temp_show[(x+j*8+7-b)+(y+m)*480];
+					temp_show[(x+j*8+7-b)+(y+m)*480] = tmp;
+				}
+                        }	
 }
 void lcd_del(int x, int y, int mode)
 {
@@ -4732,9 +4760,9 @@ void lcd_del(int x, int y, int mode)
 		{
 			for (b = 7; b >= 0; b--)
 			{
-				temp_show[(x+7-b)*480+(y+i)].r = 0;//0xf8;
-				temp_show[(x+7-b)*480+(y+i)].g = 0;//0xfc;
-				temp_show[(x+7-b)*480+(y+i)].b = 0;//0xf8;
+				temp_show[(x+7-b)+(y+i)*480].r = 0;//0xf8;
+				temp_show[(x+7-b)+(y+i)*480].g = 0;//0xfc;
+				temp_show[(x+7-b)+(y+i)*480].b = 0;//0xf8;
 			}
 		}		
 	}
@@ -4745,9 +4773,9 @@ void lcd_del(int x, int y, int mode)
 			{
 				for (b = 7; b >=0; b--)
 				{
-					temp_show[(x+j*8+7-b)*480+(y+i)].r = 0;//0xf8;
-					temp_show[(x+j*8+7-b)*480+(y+i)].g = 0;//0xfc;
-					temp_show[(x+j*8+7-b)*480+(y+i)].b = 0;//0xf8;
+					temp_show[(x+j*8+7-b)+(y+i)*480].r = 0;//0xf8;
+					temp_show[(x+j*8+7-b)+(y+i)*480].g = 0;//0xfc;
+					temp_show[(x+j*8+7-b)+(y+i)*480].b = 0;//0xf8;
 				}
 			}	
 	}
