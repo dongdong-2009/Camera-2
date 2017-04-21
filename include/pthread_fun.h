@@ -13,7 +13,6 @@
 #include "serial.h"
 #include "rgb2bmp.h"
 
-
 //------------------key.h-------------//
 #include <sys/types.h>
 #include <sys/stat.h>

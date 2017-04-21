@@ -1,8 +1,8 @@
 #include "pthread_fun.h"
 
 static int flip_falg = 0;		//旋转标志位
-
-static int key_falg = 0;
+static int down_CDD_falg = 0;
+static int up_CDD_falg = 0;
 
 static void swap_buffer(void *ptr){		//buff旋转180度
 
@@ -49,6 +49,7 @@ void *camera_show(void * c) //摄像头线程函数
         close_cameral();
         return 0;
 }
+/*
 static unsigned char key_scan(void)	//获取按键
 {
          static unsigned char key_up = 1;
@@ -61,6 +62,7 @@ static unsigned char key_scan(void)	//获取按键
          }else if(key_vals[0]==1&&key_vals[1]==1) key_up=1;
          return 0;
 }
+*/
 
 void *my_key_pth(void *c)
 {
@@ -71,38 +73,20 @@ void *my_key_pth(void *c)
 	{
 		printf("can't open!\n");
 	}
-	lcd_put_ascii(130,350,'L');
-	
-	lcd_put_ascii(130,250,'H');
-	
-	lcd_put_ascii(130,150,'Y');
 	while (1)
 	{
-		read(fd, key_vals, sizeof(key_vals));
-		key=key_scan();
+		read(fd,&key,1);
 		if(key)
 		{
 			switch(key)
 			{
 				case 1:
-					if(key_falg)
-					{
-						key_falg = 0;
-						usart_count[2] = 0x00;
-					}
-					else 
-					{
-						key_falg = 1;
-						usart_count[2] = 0x01;
-					}
-					break;
-				case 2:
 					if(flip_falg){
 						flip_falg = 0;
-						lcd_del(30,450,MY_HANZI);
-						lcd_del(30,430,MY_HANZI);
-						lcd_del(30,410,MY_HANZI);
-						lcd_del(30,390,MY_HANZI);
+						lcd_del(30,450);
+						lcd_del(30,430);
+						lcd_del(30,410);
+						lcd_del(30,390);
 					}
 					else{
 						flip_falg = 1;
@@ -112,9 +96,52 @@ void *my_key_pth(void *c)
 						lcd_put_chinese(30,390,"转");
 					    }
 					break;
-				case 3:
-					printf("key2 !!\n");
+				case 2:
+					 if(up_CDD_falg){
+                                                up_CDD_falg = 0;
+                                                lcd_del(60,450);
+                                                lcd_del(60,430);
+                                                lcd_del(60,420);
+                                                lcd_del(60,410);
+                                                lcd_del(60,400);
+                                                lcd_del(60,380);
+                                        }
+                                        else{
+                                                up_CDD_falg = 1;
+                                                lcd_put_chinese(60,450,"前");
+												lcd_put_ascii(60,430,'C');
+												lcd_put_ascii(60,420,'D');
+												lcd_put_ascii(60,410,'D');
+                                                lcd_put_chinese(60,400,"上");
+                                                lcd_put_chinese(60,380,"仰");
+                                            }
 					break;
+				case 5:
+					if(down_CDD_falg){
+                                                down_CDD_falg = 0;
+                                                lcd_del(60,350);
+                                                lcd_del(60,330);
+                                                lcd_del(60,320);
+                                                lcd_del(60,310);
+                                                lcd_del(60,300);
+                                                lcd_del(60,280);
+                                        }
+                                        else{
+                                                down_CDD_falg = 1;
+                                                lcd_put_chinese(60,350,"前");
+												lcd_put_ascii(60,330,'C');
+												lcd_put_ascii(60,320,'D');
+												lcd_put_ascii(60,310,'D');
+                                                lcd_put_chinese(60,300,"后");
+                                                lcd_put_chinese(60,280,"仰");
+					    }
+					break;
+				case 4:
+                                        printf("key4 !!\n");
+                                        break;
+				case 3:
+                                        printf("key5 !!\n");
+                                        break;
 				default:
 					break;
 			}

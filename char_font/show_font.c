@@ -4704,7 +4704,7 @@ void lcd_put_ascii(int x, int y,unsigned char c)
 			temp_show[x+15-b][y+i] = temp_show[x+15-b][y+m];
 			temp_show[x+15-b][y+m] = tmp;
 		}
-	rgb32_frame temp[16][16];
+	rgb32_frame temp[16][16];	//字符旋转90度
 	for(i = 0;i < 16;i++)
 		for(j = 0;j < 16;j++)
 		{
@@ -4752,7 +4752,7 @@ void lcd_put_chinese(int x, int y, unsigned char *str)
 					temp_show[x+j*8+7-b][y+m] = tmp;
 				}
                         }
-		rgb32_frame temp[16][16];
+		rgb32_frame temp[16][16];			//字符旋转90度
 		for(i = 0;i < 16;i++)
 			for(j = 0;j < 16;j++)
 			{
@@ -4765,38 +4765,18 @@ void lcd_put_chinese(int x, int y, unsigned char *str)
 			}
 }
 
-void lcd_del(int x, int y, int mode)
+void lcd_del(int x, int y)
 {
 	int i, j, b;
-	if(MY_ASCII == mode)
-	{
-		for (i = 0; i < 16; i++)
+	for (i = 0; i < 16; i++)
+		for (j = 0; j < 2; j++)
 		{
-			for (b = 15; b >= 0; b--)
+			for (b = 7; b >=0; b--)
 			{
-				temp_show[x+15-b][(y+i)].r = 0;//0xf8;
-				temp_show[x+15-b][(y+i)].g = 0;//0xfc;
-				temp_show[x+15-b][(y+i)].b = 0;//0xf8;
+				temp_show[x+j*8+7-b][(y+i)].r = 0;//0xf8;
+				temp_show[x+j*8+7-b][(y+i)].g = 0;//0xfc;
+				temp_show[x+j*8+7-b][(y+i)].b = 0;//0xf8;
 			}
-		}		
-	}
-	else if(MY_HANZI == mode)
-	{
-		for (i = 0; i < 16; i++)
-			for (j = 0; j < 2; j++)
-			{
-				for (b = 7; b >=0; b--)
-				{
-					temp_show[x+j*8+7-b][(y+i)].r = 0;//0xf8;
-					temp_show[x+j*8+7-b][(y+i)].g = 0;//0xfc;
-					temp_show[x+j*8+7-b][(y+i)].b = 0;//0xf8;
-				}
-			}	
-	}
-	else
-	{
-		printf("lcd Using error!\n");
-		return ;
-	}
+		}	
 }
 

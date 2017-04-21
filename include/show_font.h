@@ -13,8 +13,6 @@
 #include "pthread_fun.h"
 
 #define FONTDATAMAX 4096
-#define MY_HANZI    1
-#define MY_ASCII    0
 
 
 
@@ -36,7 +34,7 @@ void lcd_put_ascii(int x, int y, unsigned char c);		//显示字符
 //void lcd_put_pixel(int x, int y, unsigned int color);
 
 /*mode :	模式选择	删除字符:MY_ASCII  删除汉字: MY_HANZI	*/
-void lcd_del(int x, int y, int mode);				//删除字符或汉字
+void lcd_del(int x, int y);				//删除字符或汉字
 
 
 #endif
